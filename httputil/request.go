@@ -12,10 +12,10 @@ type Container struct {
 
 // HandlerSpec defines request handlers
 type HandlerSpec struct {
-	Add    func(body string, container *Container) (events.APIGatewayProxyResponse, error)
-	Edit   func(body string, container *Container) (events.APIGatewayProxyResponse, error)
 	List   func(query map[string]string, container *Container) (events.APIGatewayProxyResponse, error)
+	Add    func(body string, container *Container) (events.APIGatewayProxyResponse, error)
 	Get    func(params map[string]string, container *Container) (events.APIGatewayProxyResponse, error)
+	Edit   func(params map[string]string, body string, container *Container) (events.APIGatewayProxyResponse, error)
 	Delete func(params map[string]string, container *Container) (events.APIGatewayProxyResponse, error)
 }
 
@@ -30,7 +30,7 @@ func Dispatch(req events.APIGatewayProxyRequest, container *Container, handler H
 	case "POST":
 		return handler.Add(req.Body, container)
 	case "PUT":
-		return handler.Edit(req.Body, container)
+		return handler.Edit(req.PathParameters, req.Body, container)
 	case "DELETE":
 		return handler.Delete(req.PathParameters, container)
 	}

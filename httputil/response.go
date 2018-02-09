@@ -32,6 +32,11 @@ func NewFormError(statusCode int, formError *errorutil.FormError) (events.APIGat
 // NewErrorResponse creates error response
 func NewErrorResponse(err error) (events.APIGatewayProxyResponse, error) {
 	switch e := err.(type) {
+	case *errorutil.FormError:
+		return events.APIGatewayProxyResponse{
+			StatusCode: 400,
+			Body:       e.Error(),
+		}, nil
 	case *errorutil.HTTPError:
 		return events.APIGatewayProxyResponse{
 			StatusCode: e.Status,

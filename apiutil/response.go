@@ -1,4 +1,4 @@
-package httputil
+package apiutil
 
 import (
 	"github.com/aws/aws-lambda-go/events"

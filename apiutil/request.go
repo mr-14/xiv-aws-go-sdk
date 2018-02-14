@@ -1,6 +1,8 @@
-package httputil
+package apiutil
 
 import (
+	"context"
+
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 )
@@ -9,15 +11,17 @@ import (
 type Context struct {
 	Params   map[string]string
 	DynamoDB *dynamodb.DynamoDB
+	// DynamoTX *dtx.TransactionManager
 }
 
 // HandlerSpec defines request handlers
 type HandlerSpec struct {
-	List   func(query map[string]string, ctx *Context) (events.APIGatewayProxyResponse, error)
-	Add    func(body string, ctx *Context) (events.APIGatewayProxyResponse, error)
-	Get    func(params map[string]string, ctx *Context) (events.APIGatewayProxyResponse, error)
-	Edit   func(params map[string]string, body string, ctx *Context) (events.APIGatewayProxyResponse, error)
-	Delete func(params map[string]string, ctx *Context) (events.APIGatewayProxyResponse, error)
+	List    func(query map[string]string, ctx *Context) (events.APIGatewayProxyResponse, error)
+	Add     func(body string, ctx *Context) (events.APIGatewayProxyResponse, error)
+	Get     func(params map[string]string, ctx *Context) (events.APIGatewayProxyResponse, error)
+	Edit    func(params map[string]string, body string, ctx *Context) (events.APIGatewayProxyResponse, error)
+	Delete  func(params map[string]string, ctx *Context) (events.APIGatewayProxyResponse, error)
+	DBEvent func(ctx context.Context, e events.DynamoDBEvent)
 }
 
 // Dispatch dispatches request to matching handler

@@ -1,36 +1,38 @@
 package eventutil
 
 import (
+	"log"
+
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 )
 
-// Context defines service ctx
-type Context struct {
+// Container defines service container
+type Container struct {
 	Params   map[string]string
 	DynamoDB *dynamodb.DynamoDB
 }
 
 // HandlerSpec defines request handlers
 type HandlerSpec struct {
-	Add    func(ctx *Context, e events.DynamoDBEvent)
-	Edit   func(ctx *Context, e events.DynamoDBEvent)
-	Delete func(ctx *Context, e events.DynamoDBEvent)
+	Add    func(container *Container, record *events.DynamoDBStreamRecord)
+	Edit   func(container *Container, record *events.DynamoDBStreamRecord)
+	Delete func(container *Container, record *events.DynamoDBStreamRecord)
 }
 
 // Dispatch dispatches request to matching handler
-func Dispatch(e events.DynamoDBEvent, ctx *Context, handler HandlerSpec) {
-	// switch req.HTTPMethod {
-	// case "GET":
-	// 	if req.PathParameters != nil {
-	// 		handler.Get(req.PathParameters, ctx)
-	// 	}
-	// 	handler.List(req.QueryStringParameters, ctx)
-	// case "POST":
-	// 	handler.Add(req.Body, ctx)
-	// case "PUT":
-	// 	handler.Edit(req.PathParameters, req.Body, ctx)
-	// case "DELETE":
-	// 	handler.Delete(req.PathParameters, ctx)
-	// }
+func Dispatch(e events.DynamoDBEvent, container *Container, handler HandlerSpec) {
+	for _, record := range e.Records {
+		log.Printf("Processing request data for event ID %s.\n", record.EventID)
+		switch record.EventName {
+		case "INSERT":
+			handler.Add(container, &record.Change)
+		case "MODIFY":
+			handler.Edit(container, &record.Change)
+		case "REMOVE":
+			handler.Delete(container, &record.Change)
+		default:
+			log.Printf("Stream event not supported: %s", record.EventName)
+		}
+	}
 }

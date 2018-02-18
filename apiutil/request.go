@@ -7,8 +7,8 @@ import (
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 )
 
-// Context defines service ctx
-type Context struct {
+// Container defines service ctx
+type Container struct {
 	Params   map[string]string
 	DynamoDB *dynamodb.DynamoDB
 	// DynamoTX *dtx.TransactionManager
@@ -16,16 +16,16 @@ type Context struct {
 
 // HandlerSpec defines request handlers
 type HandlerSpec struct {
-	List    func(query map[string]string, ctx *Context) (events.APIGatewayProxyResponse, error)
-	Add     func(body string, ctx *Context) (events.APIGatewayProxyResponse, error)
-	Get     func(params map[string]string, ctx *Context) (events.APIGatewayProxyResponse, error)
-	Edit    func(params map[string]string, body string, ctx *Context) (events.APIGatewayProxyResponse, error)
-	Delete  func(params map[string]string, ctx *Context) (events.APIGatewayProxyResponse, error)
+	List    func(query map[string]string, ctx *Container) (events.APIGatewayProxyResponse, error)
+	Add     func(body string, ctx *Container) (events.APIGatewayProxyResponse, error)
+	Get     func(params map[string]string, ctx *Container) (events.APIGatewayProxyResponse, error)
+	Edit    func(params map[string]string, body string, ctx *Container) (events.APIGatewayProxyResponse, error)
+	Delete  func(params map[string]string, ctx *Container) (events.APIGatewayProxyResponse, error)
 	DBEvent func(ctx context.Context, e events.DynamoDBEvent)
 }
 
 // Dispatch dispatches request to matching handler
-func Dispatch(req events.APIGatewayProxyRequest, ctx *Context, handler HandlerSpec) (events.APIGatewayProxyResponse, error) {
+func Dispatch(req events.APIGatewayProxyRequest, ctx *Container, handler HandlerSpec) (events.APIGatewayProxyResponse, error) {
 	switch req.HTTPMethod {
 	case "GET":
 		if req.PathParameters != nil {

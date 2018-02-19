@@ -33,7 +33,7 @@ func NewFormError(statusCode int, formError *errorutil.FormError) (events.APIGat
 
 // NewErrorResponse creates error response
 func NewErrorResponse(err error) (events.APIGatewayProxyResponse, error) {
-	log.Printf("Error: %s", err.Error())
+	log.Fatalf("Error: %s", err.Error())
 
 	switch e := err.(type) {
 	case *errorutil.FormError:

@@ -32,7 +32,7 @@ func Dispatch(e events.DynamoDBEvent, container *Container, handler HandlerSpec)
 		case "REMOVE":
 			handler.Delete(container, &record.Change)
 		default:
-			log.Printf("Stream event not supported: %s", record.EventName)
+			log.Fatalf("Stream event not supported: %s", record.EventName)
 		}
 	}
 }

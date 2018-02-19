@@ -1,6 +1,8 @@
 package apiutil
 
 import (
+	"log"
+
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 )
@@ -23,6 +25,8 @@ type HandlerSpec struct {
 
 // Dispatch dispatches request to matching handler
 func Dispatch(req events.APIGatewayProxyRequest, container *Container, handler HandlerSpec) (events.APIGatewayProxyResponse, error) {
+	log.Printf("Request received:\nMethod: %s\nPath: %s\nBody: %s", req.HTTPMethod, req.Path, req.Path)
+
 	switch req.HTTPMethod {
 	case "GET":
 		if req.PathParameters != nil {

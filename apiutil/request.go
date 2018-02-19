@@ -25,7 +25,7 @@ type HandlerSpec struct {
 
 // Dispatch dispatches request to matching handler
 func Dispatch(req events.APIGatewayProxyRequest, container *Container, handler HandlerSpec) (events.APIGatewayProxyResponse, error) {
-	log.Printf("Request received:\nMethod: %s\nPath: %s\nBody: %s", req.HTTPMethod, req.Path, req.Body)
+	log.Printf("Request Method: %s\nRequest Path: %s\nRequest Body: %s", req.HTTPMethod, req.Path, req.Body)
 
 	switch req.HTTPMethod {
 	case "GET":

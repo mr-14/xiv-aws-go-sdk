@@ -6,7 +6,6 @@ import (
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
-	"github.com/fumin/dtx"
 	"github.com/mr-14/xiv-aws-go-sdk/errorutil"
 )
 
@@ -14,7 +13,7 @@ import (
 type Container struct {
 	Params   map[string]string
 	DynamoDB *dynamodb.DynamoDB
-	DynamoTX *dtx.TransactionManager
+	// DynamoTX *dtx.TransactionManager
 }
 
 // Route defines http path to handler mapping

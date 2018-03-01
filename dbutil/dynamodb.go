@@ -1,12 +1,9 @@
 package dbutil
 
 import (
-	"errors"
-	"log"
 	"strconv"
 
 	"github.com/aws/aws-lambda-go/events"
-	"github.com/fumin/dtx"
 )
 
 // ToJSON converts DynamoDBAttributeValue to json string
@@ -64,17 +61,17 @@ func ToJSON(value events.DynamoDBAttributeValue) string {
 	}
 }
 
-// TxWrapper gets a transaction wrapper
-func TxWrapper(transaction func(tx *dtx.Transaction)) func(tx *dtx.Transaction) error {
-	return func(tx *dtx.Transaction) (txErr error) {
-		defer func() {
-			if err := recover(); err != nil {
-				log.Printf("Error: %s", err)
-				txErr = errors.New("error.dynamodb.transaction")
-			}
-		}()
+// // TxWrapper gets a transaction wrapper
+// func TxWrapper(transaction func(tx *dtx.Transaction)) func(tx *dtx.Transaction) error {
+// 	return func(tx *dtx.Transaction) (txErr error) {
+// 		defer func() {
+// 			if err := recover(); err != nil {
+// 				log.Printf("Error: %s", err)
+// 				txErr = errors.New("error.dynamodb.transaction")
+// 			}
+// 		}()
 
-		transaction(tx)
-		return nil
-	}
-}
+// 		transaction(tx)
+// 		return nil
+// 	}
+// }

@@ -33,7 +33,7 @@ func NewDynamoTX(dynamodb *dynamodb.DynamoDB) *DynamoTX {
 }
 
 // PutItem puts an item in dynamodb
-func (tx *DynamoTX) PutItem(input *dynamodb.PutItemInput, rollbackInput *dynamodb.PutItemInput) {
+func (tx *DynamoTX) PutItem(input *dynamodb.PutItemInput, rollbackInput *dynamodb.DeleteItemInput) {
 	rollbackJSON, err := json.Marshal(rollbackInput)
 	errorutil.PanicIfError(err)
 
@@ -48,6 +48,15 @@ func (tx *DynamoTX) UpdateItem(input *dynamodb.UpdateItemInput, rollbackInput *d
 
 	_, err = tx.DynamoDB.UpdateItem(input)
 	tx.logError(err, "UpdateItem", string(rollbackJSON))
+}
+
+// DeleteItem puts an item in dynamodb
+func (tx *DynamoTX) DeleteItem(input *dynamodb.DeleteItemInput, rollbackInput *dynamodb.PutItemInput) {
+	rollbackJSON, err := json.Marshal(rollbackInput)
+	errorutil.PanicIfError(err)
+
+	_, err = tx.DynamoDB.DeleteItem(input)
+	tx.logError(err, "DeleteItem", string(rollbackJSON))
 }
 
 func (tx *DynamoTX) logError(err error, inputType string, rollbackInput string) {

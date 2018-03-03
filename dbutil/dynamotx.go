@@ -33,50 +33,70 @@ func NewDynamoTX(dynamodb *dynamodb.DynamoDB) *DynamoTX {
 }
 
 // PutItem puts an item in dynamodb
-func (tx *DynamoTX) PutItem(input *dynamodb.PutItemInput, rollbackInput *dynamodb.DeleteItemInput) {
-	rollbackJSON, err := json.Marshal(rollbackInput)
+func (tx *DynamoTX) PutItem(input *dynamodb.PutItemInput) {
+	inputJSON, err := json.Marshal(input)
 	errorutil.PanicIfError(err)
 
 	_, err = tx.DynamoDB.PutItem(input)
-	tx.logError(err, "UpdateItem", string(rollbackJSON))
+	tx.logTransaction(err, "UpdateItem", string(inputJSON))
+}
+
+// PutItems puts items in dynamodb
+func (tx *DynamoTX) PutItems(inputs []*dynamodb.PutItemInput) {
+	for _, input := range inputs {
+		tx.PutItem(input)
+	}
 }
 
 // UpdateItem updates an item in dynamodb
-func (tx *DynamoTX) UpdateItem(input *dynamodb.UpdateItemInput, rollbackInput *dynamodb.UpdateItemInput) {
-	rollbackJSON, err := json.Marshal(rollbackInput)
+func (tx *DynamoTX) UpdateItem(input *dynamodb.UpdateItemInput) {
+	inputJSON, err := json.Marshal(input)
 	errorutil.PanicIfError(err)
 
 	_, err = tx.DynamoDB.UpdateItem(input)
-	tx.logError(err, "UpdateItem", string(rollbackJSON))
+	tx.logTransaction(err, "UpdateItem", string(inputJSON))
 }
 
-// DeleteItem puts an item in dynamodb
-func (tx *DynamoTX) DeleteItem(input *dynamodb.DeleteItemInput, rollbackInput *dynamodb.PutItemInput) {
-	rollbackJSON, err := json.Marshal(rollbackInput)
+// UpdateItems updates items in dynamodb
+func (tx *DynamoTX) UpdateItems(inputs []*dynamodb.UpdateItemInput) {
+	for _, input := range inputs {
+		tx.UpdateItem(input)
+	}
+}
+
+// DeleteItem deletes an item in dynamodb
+func (tx *DynamoTX) DeleteItem(input *dynamodb.DeleteItemInput) {
+	inputJSON, err := json.Marshal(input)
 	errorutil.PanicIfError(err)
 
 	_, err = tx.DynamoDB.DeleteItem(input)
-	tx.logError(err, "DeleteItem", string(rollbackJSON))
+	tx.logTransaction(err, "DeleteItem", string(inputJSON))
 }
 
-func (tx *DynamoTX) logError(err error, inputType string, rollbackInput string) {
+// DeleteItems deletes items in dynamodb
+func (tx *DynamoTX) DeleteItems(inputs []*dynamodb.DeleteItemInput) {
+	for _, input := range inputs {
+		tx.DeleteItem(input)
+	}
+}
+
+func (tx *DynamoTX) logTransaction(err error, inputType string, inputJSON string) {
 	if err == nil {
 		logForm, err := json.Marshal(&logForm{
 			TxID:  tx.TxID,
 			Code:  "SUCCESS",
 			Type:  inputType,
-			Input: string(rollbackInput),
+			Input: inputJSON,
 		})
-		errorutil.PanicIfError(err)
 		log.Println(string(logForm))
+		errorutil.PanicIfError(err)
 	} else {
 		logForm, err := json.Marshal(&logForm{
 			TxID: tx.TxID,
 			Code: "ERROR",
 			Type: inputType,
 		})
-		errorutil.PanicIfError(err)
 		log.Println(string(logForm))
-		panic(err)
+		errorutil.PanicIfError(err)
 	}
 }

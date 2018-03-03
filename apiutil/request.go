@@ -2,6 +2,7 @@ package apiutil
 
 import (
 	"log"
+	"runtime/debug"
 	"strings"
 
 	"github.com/aws/aws-lambda-go/events"
@@ -29,7 +30,7 @@ func Dispatch(container *Container, req events.APIGatewayProxyRequest, routes []
 
 	defer func() {
 		if err := recover(); err != nil {
-			log.Printf("Error: %s", err)
+			log.Printf("%s: %s", err, debug.Stack())
 			resp = getErrorResponse(err)
 		}
 	}()

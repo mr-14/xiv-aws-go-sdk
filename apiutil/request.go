@@ -42,6 +42,15 @@ func Dispatch(container *Container, req events.APIGatewayProxyRequest, routes []
 
 		if getPath(route.Path, req.PathParameters) == req.Path {
 			resp = route.Handler(container, req)
+
+			if resp.Headers == nil {
+				resp.Headers = map[string]string{}
+			}
+
+			if _, ok := resp.Headers["Access-Control-Allow-Origin"]; !ok {
+				resp.Headers["Access-Control-Allow-Origin"] = "*"
+			}
+
 			log.Printf("Response Sent:\nStatus: %d\nHeader: %+v\nBody: %s", resp.StatusCode, resp.Headers, resp.Body)
 			return resp
 		}

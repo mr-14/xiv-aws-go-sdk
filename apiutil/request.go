@@ -86,3 +86,16 @@ func getErrorResponse(err interface{}) events.APIGatewayProxyResponse {
 		}
 	}
 }
+
+// GetHeader gets header value by trying key in upper and lower case
+func GetHeader(headers map[string]string, key string) string {
+	if header, ok := headers[key]; ok {
+		return header
+	}
+
+	if header, ok := headers[strings.ToLower(key)]; ok {
+		return header
+	}
+
+	return ""
+}

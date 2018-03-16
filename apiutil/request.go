@@ -32,6 +32,14 @@ func Dispatch(container *Container, req events.APIGatewayProxyRequest, routes []
 		if err := recover(); err != nil {
 			log.Printf("%s: %s", err, debug.Stack())
 			resp = getErrorResponse(err)
+
+			if resp.Headers == nil {
+				resp.Headers = map[string]string{}
+			}
+
+			if _, ok := resp.Headers["Access-Control-Allow-Origin"]; !ok {
+				resp.Headers["Access-Control-Allow-Origin"] = "*"
+			}
 		}
 	}()
 

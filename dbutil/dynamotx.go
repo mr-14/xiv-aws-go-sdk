@@ -82,21 +82,20 @@ func (tx *DynamoTX) DeleteItems(inputs []*dynamodb.DeleteItemInput) {
 
 func (tx *DynamoTX) logTransaction(err error, inputType string, inputJSON string) {
 	if err == nil {
-		logForm, err := json.Marshal(&logForm{
+		logForm, _ := json.Marshal(&logForm{
 			TxID:  tx.TxID,
 			Code:  "SUCCESS",
 			Type:  inputType,
 			Input: inputJSON,
 		})
 		log.Println(string(logForm))
-		errorutil.PanicIfError(err)
 	} else {
-		logForm, err := json.Marshal(&logForm{
+		logForm, _ := json.Marshal(&logForm{
 			TxID: tx.TxID,
 			Code: "ERROR",
 			Type: inputType,
 		})
 		log.Println(string(logForm))
-		errorutil.PanicIfError(err)
+		panic(err)
 	}
 }

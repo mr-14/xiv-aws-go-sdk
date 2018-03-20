@@ -15,16 +15,19 @@ func NewErrorResponse(err error) events.APIGatewayProxyResponse {
 	case *errorutil.FormError:
 		return events.APIGatewayProxyResponse{
 			StatusCode: 400,
+			Headers:    map[string]string{"Access-Control-Allow-Origin": "*"},
 			Body:       e.Error(),
 		}
 	case *errorutil.HTTPError:
 		return events.APIGatewayProxyResponse{
 			StatusCode: e.Status,
+			Headers:    map[string]string{"Access-Control-Allow-Origin": "*"},
 			Body:       e.Form.Error(),
 		}
 	default:
 		return events.APIGatewayProxyResponse{
 			StatusCode: 500,
+			Headers:    map[string]string{"Access-Control-Allow-Origin": "*"},
 			Body:       `{"message": "error.internal"}`,
 		}
 	}

@@ -19,3 +19,8 @@ func ToSnakeCase(str string) string {
 func Decapitalize(str string) string {
 	return strings.ToLower(string(str[0])) + str[1:]
 }
+
+// Capitalize capitalize input string
+func Capitalize(str string) string {
+	return strings.ToUpper(string(str[0])) + str[1:]
+}
